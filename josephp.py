@@ -261,7 +261,11 @@ header[data-testid="stHeader"] {{ display: none; }}
     background: #ffffff; box-shadow: 0 4px 10px rgba(31,36,51,.18);
     margin: 0 -1.2rem 1.6rem; padding: .5rem 1.4rem; border-radius: 0 0 16px 16px;
 }}
-.st-key-topbar [data-testid="stHorizontalBlock"] {{ align-items: center; }}
+.st-key-topbar [data-testid="stHorizontalBlock"] {{ align-items: center; flex-direction: row !important; flex-wrap: nowrap !important; gap: .5rem; }}
+.st-key-topbar [data-testid="stColumn"], .st-key-topbar [data-testid="column"] {{ min-width: 0 !important; }}
+.st-key-topbar [data-testid="stColumn"]:first-child, .st-key-topbar [data-testid="column"]:first-child {{ flex: 0 0 4.5rem !important; width: 4.5rem !important; }}
+.st-key-topbar [data-testid="stColumn"]:last-child, .st-key-topbar [data-testid="column"]:last-child {{ flex: 1 1 auto !important; width: auto !important; }}
+section[data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"], [data-testid="collapsedControl"] {{ display: none !important; }}
 .topbrand {{ display: flex; align-items: center; gap: .9rem; justify-content: flex-end; }}
 .topbrand img {{ height: 52px; }}
 .topbrand .nm {{ font-size: 1.5rem; font-weight: 700; color: {INK}; }}
@@ -606,20 +610,20 @@ def page_admin():
                 st.rerun()
 
 
-# ------------------------------------------------------------- sidebar / nav
-SIDEBAR_CSS = f"""
+# ------------------------------------------------------------- menu drawer / nav
+DRAWER_CSS = f"""
 <style>
-/* our own button controls the menu, so hide Streamlit's arrows */
-[data-testid="stSidebarCollapseButton"], [data-testid="stSidebarCollapsedControl"],
-[data-testid="collapsedControl"] {{ display: none !important; }}
-
-section[data-testid="stSidebar"] {{ background: {GREEN}; box-shadow: 4px 0 18px rgba(0,0,0,.25); }}
-section[data-testid="stSidebar"] > div {{ padding: 0 0 2rem; }}
-section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {{ padding: 0 !important; }}
-section[data-testid="stSidebar"] * {{ color: #ffffff !important; }}
+.st-key-drawer {{
+    position: fixed !important; top: 0; left: 0; height: 100vh; width: 20rem;
+    max-width: 86vw; overflow-y: auto; z-index: 999990; background: {GREEN};
+    box-shadow: 6px 0 24px rgba(0,0,0,.35); padding: 0 0 2rem !important; gap: .6rem !important;
+}}
+.st-key-drawer [data-testid="stVerticalBlock"] {{ gap: .6rem; }}
+.st-key-drawer, .st-key-drawer * {{ color: #ffffff !important; }}
+.st-key-drawer [data-testid="stElementContainer"] {{ width: 100%; }}
 
 .brand {{ background: {GREEN_LIGHT}; display: flex; align-items: center; gap: 1rem;
-    padding: 1.1rem 1.2rem; border-bottom: 2px solid rgba(255,255,255,.18); margin-bottom: 1.4rem; }}
+    padding: 1.1rem 1.2rem; border-bottom: 2px solid rgba(255,255,255,.18); margin-bottom: 1rem; }}
 .brand .logo {{ width: 62px; height: 62px; border-radius: 50%; background: #ffffff; flex: none;
     display: flex; align-items: center; justify-content: center; overflow: hidden;
     border: 3px solid rgba(255,255,255,.55); }}
@@ -627,32 +631,29 @@ section[data-testid="stSidebar"] * {{ color: #ffffff !important; }}
 .brand .t {{ font-size: 1.8rem; font-weight: 700; line-height: 1.1; }}
 .brand .u {{ font-size: .8rem; font-weight: 500; opacity: .95; margin-top: .2rem; }}
 
-section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {{ gap: .6rem; }}
-section[data-testid="stSidebar"] .stButton {{ padding: 0 1rem; }}
-section[data-testid="stSidebar"] .stButton > button {{
+.st-key-drawer .stButton {{ padding: 0 1rem; }}
+.st-key-drawer .stButton > button {{
     width: 100%; justify-content: flex-start; text-align: left; gap: 1.2rem;
     min-height: 4rem; padding: 0 1.2rem; border-radius: 14px; border: 0;
     background: transparent; font-size: 1.25rem; font-weight: 500;
     transition: background .2s ease, transform .2s ease;
 }}
-section[data-testid="stSidebar"] .stButton > button * {{ font-size: 1.25rem !important; font-weight: 500 !important; }}
-section[data-testid="stSidebar"] .stButton > button:hover {{ background: rgba(255,255,255,.14); transform: translateX(6px); }}
-section[data-testid="stSidebar"] .stButton > button[kind="primary"],
-section[data-testid="stSidebar"] .stButton > button[data-testid="stBaseButton-primary"] {{
+.st-key-drawer .stButton > button * {{ font-size: 1.25rem !important; font-weight: 500 !important; }}
+.st-key-drawer .stButton > button:hover {{ background: rgba(255,255,255,.14); transform: translateX(6px); }}
+.st-key-drawer .stButton > button[kind="primary"],
+.st-key-drawer .stButton > button[data-testid="stBaseButton-primary"] {{
     background: #26b585; border-right: 7px solid #ffffff; }}
-section[data-testid="stSidebar"] .stButton > button[kind="primary"] *,
-section[data-testid="stSidebar"] .stButton > button[data-testid="stBaseButton-primary"] * {{ font-weight: 700 !important; }}
-.st-key-menu_toggle_side .stButton > button, .st-key-menu_toggle_side button {{
-    background: rgba(255,255,255,.16) !important; border: 1.5px solid rgba(255,255,255,.5) !important; }}
-.navlabel {{ font-size: .9rem; font-weight: 700; letter-spacing: 4px; margin: .6rem 1.4rem .2rem; opacity: .85; }}
-.sidefoot {{ margin: 2rem 1.2rem 0; padding-top: 1rem; border-top: 2px solid rgba(255,255,255,.3);
+.st-key-drawer .stButton > button[kind="primary"] *,
+.st-key-drawer .stButton > button[data-testid="stBaseButton-primary"] * {{ font-weight: 700 !important; }}
+.st-key-menu_toggle_side button {{ background: rgba(255,255,255,.16) !important;
+    border: 1.5px solid rgba(255,255,255,.5) !important; }}
+.sidefoot {{ margin: 1.5rem 1.2rem 0; padding-top: 1rem; border-top: 2px solid rgba(255,255,255,.3);
     font-size: .9rem; text-align: center; opacity: .95; }}
-</style>
-"""
 
-HIDE_SIDEBAR_CSS = """
-<style>
-section[data-testid="stSidebar"] { display: none !important; }
+/* on computers the page content moves right so the menu does not cover it */
+@media (min-width: 900px) {{
+    [data-testid="stMain"], section.main {{ margin-left: 20rem; }}
+}}
 </style>
 """
 
@@ -663,6 +664,14 @@ PAGES = [
 ]
 
 
+def is_mobile() -> bool:
+    try:
+        ua = st.context.headers.get("User-Agent", "").lower()
+    except Exception:
+        return False
+    return any(k in ua for k in ("mobi", "android", "iphone", "ipad"))
+
+
 def toggle_menu():
     st.session_state.sidebar_open = not st.session_state.sidebar_open
     st.rerun()
@@ -671,17 +680,16 @@ def toggle_menu():
 # --------------------------------------------------------------------- main
 def main():
     st.set_page_config(page_title="NSUK Promotion Interview Portal", page_icon="🎓",
-                       layout="wide", initial_sidebar_state="expanded")
-    st.markdown(CSS + SIDEBAR_CSS, unsafe_allow_html=True)
+                       layout="wide", initial_sidebar_state="collapsed")
+    st.markdown(CSS, unsafe_allow_html=True)
     init_db()
 
-    st.session_state.setdefault("sidebar_open", True)
+    if "mobile" not in st.session_state:
+        st.session_state.mobile = is_mobile()
+    st.session_state.setdefault("sidebar_open", not st.session_state.mobile)
     st.session_state.setdefault("page", PAGES[0][0])
 
-    if not st.session_state.sidebar_open:
-        st.markdown(HIDE_SIDEBAR_CSS, unsafe_allow_html=True)
-
-    # header bar: menu button (hides / shows the sidebar) + portal name
+    # header bar: menu button (hides / shows the menu) + portal name
     with st.container(key="topbar"):
         c_btn, c_brand = st.columns([1, 5])
         with c_btn:
@@ -695,24 +703,27 @@ def main():
                 unsafe_allow_html=True,
             )
 
-    with st.sidebar:
-        st.markdown(
-            f'<div class="brand"><div class="logo"><img src="{LOGO_IMG}" alt="NSUK"></div>'
-            f'<div><div class="t">NSUK</div><div class="u">{UNIVERSITY}</div></div></div>',
-            unsafe_allow_html=True,
-        )
-        for name, icon in PAGES:
-            active = st.session_state.page == name
-            if st.button(name, icon=icon, key=f"nav_{name}",
-                         type="primary" if active else "secondary"):
-                st.session_state.page = name
-                st.rerun()
-
-        st.markdown('<div class="sidefoot">Department of Computer Science<br>'
-                    "Preliminary assessments only</div>", unsafe_allow_html=True)
-        # same toggle inside the sidebar (needed on phones where the menu covers the screen)
-        if st.button("Close menu", icon=":material/close:", key="menu_toggle_side"):
-            toggle_menu()
+    # menu panel (our own, so it always opens and closes with the button)
+    if st.session_state.sidebar_open:
+        st.markdown(DRAWER_CSS, unsafe_allow_html=True)
+        with st.container(key="drawer"):
+            st.markdown(
+                f'<div class="brand"><div class="logo"><img src="{LOGO_IMG}" alt="NSUK"></div>'
+                f'<div><div class="t">NSUK</div><div class="u">{UNIVERSITY}</div></div></div>',
+                unsafe_allow_html=True,
+            )
+            for name, icon in PAGES:
+                active = st.session_state.page == name
+                if st.button(name, icon=icon, key=f"nav_{name}",
+                             type="primary" if active else "secondary"):
+                    st.session_state.page = name
+                    if st.session_state.mobile:       # close the menu after choosing on phones
+                        st.session_state.sidebar_open = False
+                    st.rerun()
+            st.markdown('<div class="sidefoot">Department of Computer Science<br>'
+                        "Preliminary assessments only</div>", unsafe_allow_html=True)
+            if st.button("Close menu", icon=":material/close:", key="menu_toggle_side"):
+                toggle_menu()
 
     {"Portal Home": page_home, "Interactive Chatbot": page_chatbot,
      "Admin Dashboard": page_admin}[st.session_state.page]()
